@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для любимой ❤️</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #ffe6eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(255, 154, 178, 0.3);
+            text-align: center;
+            position: absolute;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-20px) scale(0.95);
+        }
+
+        h1 {
+            color: #ff4a7a;
+            font-size: 22px;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        h2 {
+            color: #ff4a7a;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        /* --- Слайд 1 (Спидометр) --- */
+        .gauge-container {
+            position: relative;
+            width: 200px;
+            height: 100px;
+            margin: 0 auto 20px auto;
+            overflow: hidden;
+        }
+
+        .gauge-arc {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 200px;
+            border: 12px solid #fff0f3;
+            border-top-color: #ff7da1;
+            border-right-color: #ff7da1;
+            border-radius: 50%;
+            transform: rotate(-135deg);
+        }
+
+        .gauge-pointer-box {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+        }
+
+        .gauge-pointer {
+            position: absolute;
+            bottom: 0;
+            left: -4px;
+            width: 8px;
+            height: 85px;
+            background: #ff4a7a;
+            border-radius: 4px;
+            transform-origin: bottom center;
+            transform: rotate(-90deg);
+            transition: transform 0.1s ease-out;
+        }
+
+        .gauge-center-dot {
+            position: absolute;
+            bottom: -8px;
+            left: -8px;
+            width: 16px;
+            height: 16px;
+            background: #ff4a7a;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        .gauge-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff4a7a;
+            margin-top: 5px;
+            min-height: 35px;
+        }
+
+        .love-image-container {
+            width: 120px;
+            height: 120px;
+            margin: 15px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff0f3;
+            border: 2px dashed #ff7da1;
+        }
+
+        .love-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            animation: popIn 0.3s ease-out forwards;
+        }
+
+        .love-image-container img.active {
+            display: block;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #fff0f3;
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ff4a7a;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(255, 74, 122, 0.4);
+        }
+
+        .btn-next, .btn-submit {
+            background: linear-gradient(135deg, #ff7da1, #ff4a7a);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 74, 122, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-next {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+
+        .btn-next.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* --- Слайд 2 (Календарь) --- */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-header button {
+            background: none;
+            border: none;
+            color: #ff4a7a;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .month-year-label {
+            font-weight: bold;
+            color: #ff4a7a;
+            font-size: 18px;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            font-weight: bold;
+            color: #ff7da1;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .days-grid div {
+            padding: 8px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            color: #333;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .days-grid div:hover:not(.empty) {
+            background: #fff0f3;
+        }
+
+        .days-grid div.selected {
+            background: #ff4a7a;
+            color: white;
+            font-weight: bold;
+        }
+
+        .days-grid div.empty {
+            cursor: default;
+        }
+
+        .time-picker-container {
+            margin: 15px 0 25px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .time-picker-container label {
+            color: #ff4a7a;
+            font-weight: bold;
+        }
+
+        .time-input {
+            border: 2px solid #fff0f3;
+            border-radius: 12px;
+            padding: 8px 12px;
+            color: #ff4a7a;
+            font-size: 16px;
+            font-weight: bold;
+            outline: none;
+            text-align: center;
+            background: #fff;
+        }
+
+        .time-input:focus {
+            border-color: #ff7da1;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- СЛАЙД 1: Спидометр -->
+    <div class="card" id="slide-1">
+        <h1 id="question-text">Насколько сильно ты меня любишь? Нарисуй ползунком! ❤️</h1>
+        
+        <div class="gauge-container">
+            <div class="gauge-arc"></div>
+            <div class="gauge-pointer-box">
+                <div class="gauge-pointer" id="pointer"></div>
+                <div class="gauge-center-dot"></div>
+            </div>
+        </div>
+
+        <div class="gauge-value" id="display-value">0%</div>
+
+        <div class="love-image-container">
+            <img src="1.JPG" id="img-10" alt="10%">
+            <img src="2.JPG" id="img-30" alt="30%">
+            <img src="3.JPG" id="img-50" alt="50%">
+            <img src="4.JPG" id="img-80" alt="80%">
+        </div>
+
+        <div class="slider-container">
+            <input type="range" min="0" max="100" value="0" class="range-slider" id="love-slider">
+        </div>
+
+        <button class="btn-next" id="btn-next">Далее →</button>
+    </div>
+
+    <!-- СЛАЙД 2: Календарь -->
+    <div class="card hidden" id="slide-2">
+        <h2>Когда мы встретимся? 🌸</h2>
+        
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button id="prev-month">‹</button>
+                <div class="month-year-label" id="month-year-label">Январь 2026</div>
+                <button id="next-month">›</button>
+            </div>
+            
+            <div class="weekdays">
+                <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+            </div>
+            
+            <div class="days-grid" id="days-grid"></div>
+        </div>
+
+        <div class="time-picker-container">
+            <label for="meet-time">Во сколько:</label>
+            <input type="time" id="meet-time" class="time-input" value="18:00">
+        </div>
+
+        <button class="btn-submit" id="btn-finish">Подтвердить ✨</button>
+    </div>
+
+    <!-- Подключаем наш внешний скрипт -->
+        <script>
+        // НАСТРОЙКИ ТЕЛЕГРАМ-БОТА (Впиши свои данные сюда)
+        const TELEGRAM_BOT_TOKEN = '8835119305:AAFpwNOzK2ObXlW25zSU_A_ZzlJuXhChn_8'; 
+        const TELEGRAM_CHAT_ID = '5677442551';     
+
+        // Логика слайдов
+        const slide1 = document.getElementById('slide-1');
+        const slider = document.getElementById('love-slider');
+        const pointer = document.getElementById('pointer');
+        const displayValue = document.getElementById('display-value');
+        const btnNext = document.getElementById('btn-next');
+        const img10 = document.getElementById('img-10');
+        const img30 = document.getElementById('img-30');
+        const img50 = document.getElementById('img-50');
+        const img80 = document.getElementById('img-80');
+
+        const slide2 = document.getElementById('slide-2');
+        const monthYearLabel = document.getElementById('month-year-label');
+        const daysGrid = document.getElementById('days-grid');
+        const prevMonthBtn = document.getElementById('prev-month');
+        const nextMonthBtn = document.getElementById('next-month');
+        const meetTimeInput = document.getElementById('meet-time');
+        const btnFinish = document.getElementById('btn-finish');
+
+        let isGlitching = false;
+        const CURRENT_YEAR = 2026;
+        let currentMonth = new Date().getMonth(); 
+        let selectedDay = null;
+
+        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+
+        function changeActiveImage(activeImg) {
+            [img10, img30, img50, img80].forEach(img => { if(img) img.classList.remove('active'); });
+            if (activeImg) activeImg.classList.add('active');
+        }
+
+        function updateGauge(value) {
+            if (isGlitching) return;
+            let val = parseInt(value);
+            let angle = -90 + (val * 1.8);
+            if(pointer) pointer.style.transform = `rotate(${angle}deg)`;
+            displayValue.innerText = "0%";
+
+            if (val >= 10 && val < 30) changeActiveImage(img10);
+            else if (val >= 30 && val < 50) changeActiveImage(img30);
+            else if (val >= 50 && val < 80) changeActiveImage(img50);
+            else if (val >= 80) changeActiveImage(img80);
+            else changeActiveImage(null);
+
+            if (val === 100) triggerGlitch();
+        }
+
+        function triggerGlitch() {
+            isGlitching = true;
+            slider.disabled = true;
+            let duration = 5000; 
+            let intervalTime = 50;
+            let elapsed = 0;
+
+            const glitchInterval = setInterval(() => {
+                elapsed += intervalTime;
+                let randomNum = Math.floor(Math.random() * 900) + 100;
+                displayValue.innerText = randomNum + "%";
+                let randomAngle = Math.floor(Math.random() * 30) - 15;
+                if(pointer) pointer.style.transform = `rotate(${randomAngle}deg)`;
+
+                if (elapsed >= duration) {
+                    clearInterval(glitchInterval);
+                    finalizeGauge();
+                }
+            }, intervalTime);
+        }
+
+        function finalizeGauge() {
+            displayValue.innerText = "-1%";
+            if(pointer) pointer.style.transform = 'rotate(-95deg)'; 
+            btnNext.classList.add('show');
+        }
+
+        if(slider) slider.addEventListener('input', (e) => updateGauge(e.target.value));
+
+        btnNext.addEventListener('click', () => {
+            slide1.classList.add('hidden');
+            setTimeout(() => {
+                slide1.style.display = 'none'; 
+                slide2.classList.remove('hidden');
+                renderCalendar();
+            }, 500);
+        });
+
+        function renderCalendar() {
+            daysGrid.innerHTML = "";
+            monthYearLabel.innerText = `${monthNames[currentMonth]} ${CURRENT_YEAR}`;
+            let firstDayIndex = new Date(CURRENT_YEAR, currentMonth, 1).getDay();
+            let startShift = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+            let daysInMonth = new Date(CURRENT_YEAR, currentMonth + 1, 0).getDate();
+
+            const today = new Date();
+            const minSelectableDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7);
+
+            for (let i = 0; i < startShift; i++) {
+                let emptyDiv = document.createElement('div');
+                emptyDiv.classList.add('empty');
+                daysGrid.appendChild(emptyDiv);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                let dayDiv = document.createElement('div');
+                dayDiv.innerText = day;
+                let checkDate = new Date(CURRENT_YEAR, currentMonth, day);
+
+                if (checkDate < minSelectableDate) {
+                    dayDiv.style.color = '#ccc';
+                    dayDiv.style.cursor = 'not-allowed';
+                    dayDiv.classList.add('empty'); 
+                } else {
+                    if (selectedDay && selectedDay.day === day && selectedDay.month === currentMonth) {
+                        dayDiv.classList.add('selected');
+                    }
+                    dayDiv.addEventListener('click', () => {
+                        document.querySelectorAll('.days-grid div').forEach(d => d.classList.remove('selected'));
+                        dayDiv.classList.add('selected');
+                        selectedDay = { day: day, month: currentMonth };
+                    });
+                }
+                daysGrid.appendChild(dayDiv);
+            }
+        }
+
+        prevMonthBtn.addEventListener('click', () => { if (currentMonth > 0) { currentMonth--; renderCalendar(); } });
+        nextMonthBtn.addEventListener('click', () => { if (currentMonth < 11) { currentMonth++; renderCalendar(); } });
+
+        btnFinish.addEventListener('click', async () => {
+            if (!selectedDay) {
+                alert('Пожалуйста, выбери доступную дату на календаре! 💕');
+                return;
+            }
+            let finalDate = `${selectedDay.day} ${monthNames[selectedDay.month]} ${CURRENT_YEAR}`;
+            let finalTime = meetTimeInput.value;
+            
+            btnFinish.disabled = true;
+            btnFinish.innerText = "Отправка...";
+
+            const textMessage = `🎯 Твоя девушка выбрала дату для свидания!\n\n📅 Дата: ${finalDate}\n⏰ Время: ${finalTime}\n\nГотовься! 😉`;
+            const url = `https://telegram.org{TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: textMessage })
+                });
+                if (response.ok) {
+                    alert(`Ура! Свидание назначено на ${finalDate} в ${finalTime}! Увидимся! 😍`);
+                    btnFinish.innerText = "Подтверждено! ✨";
+                } else { throw new Error(); }
+            } catch (e) {
+                alert('Ошибка отправки. Проверь токен бота и chat_id.');
+                btnFinish.disabled = false;
+                btnFinish.innerText = "Подтвердить ✨";
+            }
+        });
+    </script>
+
+</body>
+</html>
