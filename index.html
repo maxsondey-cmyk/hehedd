@@ -495,7 +495,7 @@
     
     // Используем самый надежный метод для GitHub Pages — Fetch запрос
     try {
-        const response = await fetch(`https://telegram.org{MY_BOT_TOKEN}/sendMessage`, {
+        const response = await fetch('https://api.telegram.org/bot' + MY_BOT_TOKEN + '/sendMessage', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
