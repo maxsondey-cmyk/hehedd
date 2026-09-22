@@ -303,7 +303,7 @@
         <div class="gauge-value" id="display-value">0%</div>
 
         <div class="love-image-container">
-            <img src="1.JPG" id="img-10" alt="10%">
+            <img src="1.JPG" id="img-10" alt="0%">
             <img src="2.JPG" id="img-30" alt="30%">
             <img src="3.JPG" id="img-50" alt="50%">
             <img src="4.JPG" id="img-80" alt="80%">
@@ -386,7 +386,7 @@
             if(pointer) pointer.style.transform = `rotate(${angle}deg)`;
             displayValue.innerText = "0%";
 
-            if (val >= 10 && val < 30) changeActiveImage(img10);
+            if (val >= 0 && val < 30) changeActiveImage(img10);
             else if (val >= 30 && val < 50) changeActiveImage(img30);
             else if (val >= 50 && val < 80) changeActiveImage(img50);
             else if (val >= 80) changeActiveImage(img80);
@@ -505,7 +505,7 @@
         });
 
         if (response.ok) {
-            alert(`Ура! Свидание назначено на ${finalDate} в ${finalTime}! Увидимся! 😍`);
+            alert(`Ура! Увидимся!`);
             btnFinish.innerText = "Подтверждено! ✨";
         } else {
             alert('Упс! Телеграм отклонил запрос. Проверь, запущен ли бот в личке (/start).');
